@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <style>
+    .container {
+      background-color: aliceblue;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 30px;
+      font-size: 17px;
+    }
+    .boxes {
+      background-color: cadetblue;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      width: 1400px;
+      padding: 50px;
+      border-radius: 10px;
+    }
+    input {
+      padding: 20px;
+      width: 150px;
+      background-color: cadetblue;
+      border-radius: 50px;
+      border: none;
+    }
+    ::placeholder {
+      color: white;
+      font-size: 17px;
+    }
+    .box {
+      width: 300px;
+      height: auto;
+      background-color: white;
+      padding: 20px;
+      border-radius: 10px;
+    }
+    .top {
+      display: flex;
+      gap: 20px;
+    }
+    select {
+      width: 150px;
+      border-radius: 20px;
+      height: 50px;
+      padding: 10px;
+    }
+    button {
+      width: 150px;
+      border-radius: 20px;
+      height: 50px;
+      border: none;
+      background-color: cadetblue;
+      color: white;
+    }
+  </style>
+  <body>
+    <div class="container">
+      <div class="top">
+        <input type="text" placeholder="search" />
+        <select name="" id="">
+          <option value="Location">Location</option>
+          <option value="Stuttgart">Stuttgart</option>
+          <option value="Munich">Munich</option>
+          <option value="Garching">Garching</option>
+          <option value="Berlin">Berlin</option>
+          <option value="Hamburg">Hamburg</option>
+          <option value="Osnabruck">Osnabruck</option>
+          <option value="Idar-Oberstein">Idar-Oberstein</option>
+          <option value="Hildesheim">Hildesheim</option>
+          <option value="Duisburg">Duisburg</option>
+        </select>
+
+        <button id="fav">Favourites</button>
+      
+      </div>  <div class="boxes"></div>
+    </div>
+    <script>
+      let URL = `https://www.arbeitnow.com/api/job-board-api`;
+      let input = document.querySelector("input");
+      let boxes = document.querySelector(".boxes");
+      let select = document.querySelector("select");
+      const favBtn = document.querySelector("#fav");
+
+      window.addEventListener("load", async function add() {
+        boxes.innerHTML = "";
+        let promise = await fetch(URL);
+        const data = await promise.json();
+        for (let i = 0; i < data.data.length; i++) {
+          const div = document.createElement("div");
+          div.innerHTML = `   <div class="box">
+        <h1>Title:${data.data[i].title}</h1>
+        <p>description:${data.data[i].slug}</p>
+        <button style="background-color: white; color: black; padding: 10px; border-radius: 30px;">Add to Favourites</button>
+      </div>`;
+          boxes.appendChild(div);
+          input.addEventListener("keyup", function (e) {
+            if (e.key == "Enter") {
+              let value = input.value.toLowerCase();
+              if (data.data[i].title.toLowerCase().includes(value)) {
+                boxes.innerHTML = "";
+                const div2 = document.createElement("div");
+                div2.innerHTML = `<div class="box">
+        <h1>Title:${data.data[i].title}</h1>
+        <p>description:${data.data[i].slug}</p>
+        
+      </div>`;
+                boxes.appendChild(div2);
+              }
+            }
+            if (e.key == "Backspace" && input.value.length == 1) {
+              const div2 = document.createElement("div");
+              div2.innerHTML = `<div class="box">
+        <h1>Title:${data.data[i].title}</h1>
+        <p>description:${data.data[i].slug}</p>
+       
+      </div>`;
+              boxes.appendChild(div2);
+            }
+          });
+          select.addEventListener("change", function () {
+            let selected = select.value;
+            if (data.data[i].location == selected) {
+              boxes.innerHTML = "";
+              const div2 = document.createElement("div");
+              div2.innerHTML = `<div class="box">
+        <h1>Title:${data.data[i].title}</h1>
+        <p>description:${data.data[i].slug}</p>
+       
+      </div>`;
+              boxes.appendChild(div2);
+            }
+          });
+          const button=div.querySelector("button");
+          const p=div.querySelector("p");
+          button.addEventListener("click", ()=>{
+            button.textContent="added to favourites";
+            button.style.backgroundColor="cyan";
+          });
+        }
+      });
+    </script>
+  </body>
+</html>
